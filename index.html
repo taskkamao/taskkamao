@@ -1,2 +1,1007 @@
-const SUPABASE_URL = "https://uiwymyrkyrnurirgetry.supabase.co";
-const SUPABASE_KEY = "sb_publishable_AWWtQjThIRfEh3tQGCcWQA_hlBdwKEA";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TaskKamao Dashboard</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f7fb;
+  color:#172033;
+}
+
+header{
+  background:#111827;
+  color:white;
+  padding:18px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.status{
+  font-size:13px;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+
+.tabs{
+  display:flex;
+  gap:8px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+
+.tabs button{
+  border:0;
+  padding:11px 18px;
+  border-radius:8px;
+  background:#e5e7eb;
+  cursor:pointer;
+}
+
+.tabs button.active{
+  background:#111827;
+  color:white;
+}
+
+.panel{
+  display:none;
+}
+
+.panel.active{
+  display:block;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.card{
+  background:white;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:14px;
+  box-shadow:0 2px 10px rgba(0,0,0,.07);
+}
+
+.num{
+  font-size:28px;
+  font-weight:bold;
+  margin-top:8px;
+}
+
+.task-title{
+  font-size:18px;
+  font-weight:bold;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.badge{
+  background:#dcfce7;
+  color:#166534;
+  padding:5px 10px;
+  border-radius:20px;
+  font-size:12px;
+}
+
+.btn{
+  border:0;
+  border-radius:7px;
+  padding:10px 14px;
+  cursor:pointer;
+  background:#111827;
+  color:white;
+}
+
+.btn.green{
+  background:#16a34a;
+}
+
+input,
+textarea,
+select{
+  width:100%;
+  padding:11px;
+  margin:6px 0 12px;
+  border:1px solid #d1d5db;
+  border-radius:7px;
+  font-size:15px;
+}
+
+textarea{
+  min-height:110px;
+  resize:vertical;
+}
+
+.muted{
+  color:#6b7280;
+  font-size:14px;
+}
+
+.message{
+  margin-top:12px;
+  font-weight:bold;
+}
+</style>
+</head>
+
+
+<body>
+
+<header>
+
+  <div class="logo">
+    Task<b>Kamao</b>
+  </div>
+
+  <div id="status" class="status">
+    Connecting...
+  </div>
+
+</header>
+
+
+<div class="container">
+
+  <!-- TABS -->
+
+  <div class="tabs">
+
+    <button
+      class="active"
+      onclick="showPanel('worker',this)">
+      Worker
+    </button>
+
+    <button
+      onclick="showPanel('client',this)">
+      Client
+    </button>
+
+    <button
+      onclick="showPanel('admin',this)">
+      Admin
+    </button>
+
+  </div>
+
+
+  <!-- ================= WORKER ================= -->
+
+  <section
+    id="worker"
+    class="panel active">
+
+    <h2>Worker Dashboard</h2>
+
+    <div class="cards">
+
+      <div class="card">
+        Available Tasks
+        <div
+          class="num"
+          id="availableCount">
+          0
+        </div>
+      </div>
+
+      <div class="card">
+        ₹25 Tasks
+        <div
+          class="num"
+          id="count25">
+          0
+        </div>
+      </div>
+
+      <div class="card">
+        ₹40 Tasks
+        <div
+          class="num"
+          id="count40">
+          0
+        </div>
+      </div>
+
+      <div class="card">
+        ₹150 Tasks
+        <div
+          class="num"
+          id="count150">
+          0
+        </div>
+      </div>
+
+    </div>
+
+
+    <h3>Available Tasks</h3>
+
+    <div id="taskList">
+      Loading tasks...
+    </div>
+
+  </section>
+
+
+  <!-- ================= CLIENT ================= -->
+
+  <section
+    id="client"
+    class="panel">
+
+    <h2>Client Dashboard</h2>
+
+    <div class="card">
+
+      <h3>Create New Task</h3>
+
+      <label>Task Title</label>
+
+      <input
+        id="title"
+        type="text"
+        placeholder="Example: Data Verification">
+
+
+      <label>Instructions</label>
+
+      <textarea
+        id="instructions"
+        placeholder="Explain what the worker has to do">
+      </textarea>
+
+
+      <label>Reward</label>
+
+      <select id="reward">
+
+        <option value="25">
+          ₹25
+        </option>
+
+        <option value="40">
+          ₹40
+        </option>
+
+        <option value="150">
+          ₹150
+        </option>
+
+      </select>
+
+
+      <button
+        class="btn green"
+        onclick="createTask()">
+
+        Create Task
+
+      </button>
+
+
+      <div
+        id="createMessage"
+        class="message">
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= ADMIN ================= -->
+
+  <section
+    id="admin"
+    class="panel">
+
+    <h2>Admin Dashboard</h2>
+
+    <div class="cards">
+
+      <div class="card">
+        Total Tasks
+
+        <div
+          class="num"
+          id="adminTotal">
+          0
+        </div>
+      </div>
+
+
+      <div class="card">
+        Pending Tasks
+
+        <div
+          class="num"
+          id="adminPending">
+          0
+        </div>
+      </div>
+
+
+      <div class="card">
+        Completed Tasks
+
+        <div
+          class="num"
+          id="adminCompleted">
+          0
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+
+<script>
+
+/*
+====================================================
+SUPABASE CONNECTION
+====================================================
+*/
+
+const SUPABASE_URL =
+"https://uiwymyrkyrnurirgetry.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_AWWtQjThIRfEh3tQGCcWQA_hlBdwKEA";
+
+
+/*
+====================================================
+SUPABASE REQUEST
+====================================================
+*/
+
+async function supabaseRequest(
+  path,
+  options = {}
+){
+
+  const response = await fetch(
+
+    SUPABASE_URL +
+    "/rest/v1/" +
+    path,
+
+    {
+      ...options,
+
+      headers:{
+        "apikey":SUPABASE_KEY,
+
+        "Authorization":
+        "Bearer " + SUPABASE_KEY,
+
+        "Content-Type":
+        "application/json",
+
+        ...(options.headers || {})
+      }
+
+    }
+
+  );
+
+
+  if(!response.ok){
+
+    const error =
+      await response.text();
+
+    throw new Error(error);
+
+  }
+
+
+  const text =
+    await response.text();
+
+  return text
+    ? JSON.parse(text)
+    : [];
+
+}
+
+
+
+/*
+====================================================
+TEST SUPABASE
+====================================================
+*/
+
+async function testConnection(){
+
+  try{
+
+    await supabaseRequest(
+      "tasks?select=id&limit=1"
+    );
+
+
+    document.getElementById(
+      "status"
+    ).textContent =
+      "● Supabase Connected";
+
+
+    loadTasks();
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+
+    document.getElementById(
+      "status"
+    ).textContent =
+      "● Connection failed";
+
+
+    document.getElementById(
+      "taskList"
+    ).innerHTML = `
+
+      <div class="card">
+
+        <b>
+          Supabase connection नहीं हुआ।
+        </b>
+
+        <p class="muted">
+          Database table या RLS settings
+          check करनी होंगी।
+        </p>
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+
+/*
+====================================================
+LOAD TASKS
+====================================================
+*/
+
+async function loadTasks(){
+
+  try{
+
+    const tasks =
+      await supabaseRequest(
+        "tasks?select=*&order=id.desc"
+      );
+
+
+    renderTasks(tasks);
+
+    updateStats(tasks);
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+
+    document.getElementById(
+      "taskList"
+    ).innerHTML = `
+
+      <div class="card">
+
+        <b>
+          Tasks load नहीं हुए।
+        </b>
+
+        <p class="muted">
+          ${escapeHtml(error.message)}
+        </p>
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+
+/*
+====================================================
+RENDER TASKS
+====================================================
+*/
+
+function renderTasks(tasks){
+
+  const list =
+    document.getElementById(
+      "taskList"
+    );
+
+
+  if(!tasks.length){
+
+    list.innerHTML = `
+
+      <div class="card">
+
+        <b>
+          अभी कोई task नहीं है।
+        </b>
+
+        <p class="muted">
+          Client Dashboard से पहला task
+          create करें।
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  list.innerHTML =
+    tasks.map(task => {
+
+      const title =
+        task.title || "Untitled Task";
+
+      const instructions =
+        task.instructions || "";
+
+      const reward =
+        task.reward ??
+        task.amount ??
+        0;
+
+      const status =
+        task.status ||
+        "pending";
+
+
+      return `
+
+        <div class="card">
+
+          <div class="row">
+
+            <div class="task-title">
+
+              ${escapeHtml(title)}
+
+            </div>
+
+            <span class="badge">
+
+              ₹${escapeHtml(
+                String(reward)
+              )}
+
+            </span>
+
+          </div>
+
+
+          <p class="muted">
+
+            ${escapeHtml(
+              instructions
+            )}
+
+          </p>
+
+
+          <div class="row">
+
+            <small>
+
+              Status:
+              ${escapeHtml(
+                String(status)
+              )}
+
+            </small>
+
+
+            <button
+              class="btn"
+              onclick="startTask('${escapeJs(title)}')">
+
+              Start Task
+
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+
+/*
+====================================================
+UPDATE STATS
+====================================================
+*/
+
+function updateStats(tasks){
+
+  const pending =
+    tasks.filter(
+      task =>
+        !task.status ||
+        task.status === "pending"
+    );
+
+
+  const completed =
+    tasks.filter(
+      task =>
+        task.status === "completed"
+    );
+
+
+  document.getElementById(
+    "availableCount"
+  ).textContent =
+    pending.length;
+
+
+  document.getElementById(
+    "count25"
+  ).textContent =
+    tasks.filter(
+      task =>
+        Number(
+          task.reward ??
+          task.amount
+        ) === 25
+    ).length;
+
+
+  document.getElementById(
+    "count40"
+  ).textContent =
+    tasks.filter(
+      task =>
+        Number(
+          task.reward ??
+          task.amount
+        ) === 40
+    ).length;
+
+
+  document.getElementById(
+    "count150"
+  ).textContent =
+    tasks.filter(
+      task =>
+        Number(
+          task.reward ??
+          task.amount
+        ) === 150
+    ).length;
+
+
+  document.getElementById(
+    "adminTotal"
+  ).textContent =
+    tasks.length;
+
+
+  document.getElementById(
+    "adminPending"
+  ).textContent =
+    pending.length;
+
+
+  document.getElementById(
+    "adminCompleted"
+  ).textContent =
+    completed.length;
+
+}
+
+
+
+/*
+====================================================
+CREATE TASK
+====================================================
+*/
+
+async function createTask(){
+
+  const title =
+    document.getElementById(
+      "title"
+    ).value.trim();
+
+
+  const instructions =
+    document.getElementById(
+      "instructions"
+    ).value.trim();
+
+
+  const reward =
+    Number(
+      document.getElementById(
+        "reward"
+      ).value
+    );
+
+
+  const message =
+    document.getElementById(
+      "createMessage"
+    );
+
+
+  if(!title){
+
+    message.textContent =
+      "❌ Task title डालें।";
+
+    return;
+
+  }
+
+
+  try{
+
+    message.textContent =
+      "Task create हो रहा है...";
+
+
+    await supabaseRequest(
+      "tasks",
+      {
+
+        method:"POST",
+
+        headers:{
+          "Prefer":
+          "return=minimal"
+        },
+
+        body:
+        JSON.stringify({
+
+          title:title,
+
+          instructions:
+          instructions,
+
+          reward:reward,
+
+          status:"pending"
+
+        })
+
+      }
+    );
+
+
+    document.getElementById(
+      "title"
+    ).value = "";
+
+
+    document.getElementById(
+      "instructions"
+    ).value = "";
+
+
+    document.getElementById(
+      "reward"
+    ).value = "25";
+
+
+    message.textContent =
+      "✅ Task successfully created!";
+
+
+    loadTasks();
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+
+    message.textContent =
+      "❌ Task create नहीं हुआ: " +
+      error.message;
+
+  }
+
+}
+
+
+
+/*
+====================================================
+START TASK
+====================================================
+*/
+
+function startTask(title){
+
+  alert(
+    "Task selected: " +
+    title
+  );
+
+}
+
+
+
+/*
+====================================================
+TABS
+====================================================
+*/
+
+function showPanel(
+  id,
+  button
+){
+
+  document
+    .querySelectorAll(".panel")
+    .forEach(
+      panel =>
+        panel.classList.remove(
+          "active"
+        )
+    );
+
+
+  document
+    .querySelectorAll(
+      ".tabs button"
+    )
+    .forEach(
+      btn =>
+        btn.classList.remove(
+          "active"
+        )
+    );
+
+
+  document
+    .getElementById(id)
+    .classList.add("active");
+
+
+  button.classList.add("active");
+
+}
+
+
+
+/*
+====================================================
+HTML SECURITY
+====================================================
+*/
+
+function escapeHtml(value){
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+function escapeJs(value){
+
+  return String(value)
+
+    .replaceAll(
+      "\\",
+      "\\\\"
+    )
+
+    .replaceAll(
+      "'",
+      "\\'"
+    );
+
+}
+
+
+
+/*
+====================================================
+START APP
+====================================================
+*/
+
+testConnection();
+
+</script>
+
+</body>
+</html>
