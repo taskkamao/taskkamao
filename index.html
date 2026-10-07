@@ -618,16 +618,24 @@ async function acceptTask(id){
 
   if(!ok) return;
 
+  let workerId =
+    localStorage.getItem("worker_id");
+
+  if(!workerId){
+    workerId = crypto.randomUUID();
+    localStorage.setItem("worker_id", workerId);
+  }
 
   const { error } =
     await db
-    .from("tasks")
-    .update({
-      status:"in_progress"
-    })
-    .eq("id",id)
-    .eq("status","open");
-
+      .from("tasks")
+      .update({
+        status: "in_progress",
+        worker_id: workerId,
+        submission_status: "pending"
+      })
+      .eq("id", id)
+      .eq("status", "open");
 
   if(error){
 
@@ -641,11 +649,12 @@ async function acceptTask(id){
     return;
   }
 
-
-  alert("Task accepted!");
+  alert("Task successfully accepted!");
 
   loadTasks();
   loadAdmin();
+  loadClient();
+}
 }
 
 
