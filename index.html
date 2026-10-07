@@ -510,6 +510,34 @@ function updateRewardCounts(tasks){
    CREATE TASK
 ========================= */
 
+
+/* =========================
+   CLIENT COUNT
+========================= */
+
+async function loadClient(){
+
+  const { data, error } =
+    await db
+      .from("tasks")
+      .select("status");
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  const tasks = data || [];
+
+  document.getElementById("clientActive")
+    .innerText =
+      tasks.filter(t => t.status === "open").length;
+
+  document.getElementById("clientSubmissions")
+    .innerText = 0;
+}
+
+
 async function createTask(){
 
   const title =
