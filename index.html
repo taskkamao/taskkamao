@@ -429,7 +429,7 @@ async function loadTasks(){
     await db
     .from("tasks")
     .select("*")
-    .eq("status","pending")
+    .eq("status","open")
     .order("created_at",{ascending:false});
 
   if(error){
